@@ -38,15 +38,17 @@ void liberar_matriz(float **matriz, int N) {
     free(matriz);
 }
 
+//Función principal
 int main(int argc, char *argv[]) {
-    if (argc != 4) {
-        printf("Uso: %s <N> <umbral> <max_iter>\n", argv[0]);
+    if (argc != 5) {
+        printf("Uso: %s <N> <umbral> <max_iter> <modo: 0=secuencial | 1=paralelo>\n", argv[0]);
         return 1;
     }
 
     int N = atoi(argv[1]);
     float umbral = atof(argv[2]);
     int max_iter = atoi(argv[3]);
+    int modo = atoi(argv[4]);
 
     float **actual = crear_matriz(N);
     float **siguiente = crear_matriz(N);
@@ -60,17 +62,33 @@ int main(int argc, char *argv[]) {
     do {
         max_cambio = 0.0;
 
-        for (int i = 1; i < N-1; i++) {
-            for (int j = 1; j < N-1; j++) {
-                siguiente[i][j] = calcular_promedio(actual, i, j);
-                float cambio = fabs(siguiente[i][j] - actual[i][j]);
-                if (cambio > max_cambio) {
-                    max_cambio = cambio;
+        //Ejecución secuencial
+        if (modo == 0) {
+            for (int i = 1; i < N - 1; i++) {
+                for (int j = 1; j < N - 1; j++) {
+                    siguiente[i][j] = calcular_promedio(actual, i, j);
+                    float cambio = fabs(siguiente[i][j] - actual[i][j]);
+                    if (cambio > max_cambio) {
+                        max_cambio = cambio;
+                    }
+                }
+            }
+
+        //Ejecución paralelizada con OpenMP
+        } else {
+            #pragma omp parallel for reduction(max:max_cambio)
+            for (int i = 1; i < N - 1; i++) {
+                for (int j = 1; j < N - 1; j++) {
+                    siguiente[i][j] = calcular_promedio(actual, i, j);
+                    float cambio = fabs(siguiente[i][j] - actual[i][j]);
+                    if (cambio > max_cambio) {
+                        max_cambio = cambio;
+                    }
                 }
             }
         }
 
-        // Intercambiar matrices (punteros)
+        //Intercambio de matrices
         float **temp = actual;
         actual = siguiente;
         siguiente = temp;
@@ -80,6 +98,7 @@ int main(int argc, char *argv[]) {
 
     double end = omp_get_wtime();
 
+    printf("Modo: %s\n", modo == 0 ? "Secuencial" : "Paralelo");
     printf("Iteraciones: %d\n", iter);
     printf("Tiempo: %f segundos\n", end - start);
 
