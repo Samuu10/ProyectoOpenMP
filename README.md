@@ -36,14 +36,8 @@ Incluye:
 - Medición de tiempo con `omp_get_wtime()`
 - Liberación de memoria al finalizar
 
-// Fragmento relevante
-#pragma omp parallel for reduction(max:max_cambio)
-for (int i = 1; i < N - 1; i++) {
-    for (int j = 1; j < N - 1; j++) {
-        siguiente[i][j] = calcular_promedio(actual, i, j);
-        float cambio = fabs(siguiente[i][j] - actual[i][j]);
-        if (cambio > max_cambio) {
-            max_cambio = cambio;
-        }
-    }
-}
+## Estructura del Proyecto
+├── main.c              # Código fuente
+├── CMakeLists.txt      # Configuración CMake
+└── README.md           # Este archivo
+
