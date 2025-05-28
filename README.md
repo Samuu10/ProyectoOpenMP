@@ -37,7 +37,11 @@ Incluye:
 - Liberación de memoria al finalizar
 
 ## Estructura del Proyecto
-├── main.c              # Código fuente
-├── CMakeLists.txt      # Configuración CMake
-└── README.md           # Este archivo
+- main.c              # Código fuente
+
+
+- CMakeLists.txt      # Configuración CMake
+
+
+- README.md           # Este archivo
 
